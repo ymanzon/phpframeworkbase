@@ -928,3 +928,8 @@ nav {
     /* Ajusta el color de fondo */
     /* Otros estilos para tu nav */
 }
+/* Estilos de tarjeta del config (estilo_tarjeta: foto | clasica | minimal).
+   El JS agrega la clase tarjeta-{estilo} al grid. 'foto' es el diseño actual. */
+.properties-grid.tarjeta-minimal .property-card { box-shadow: none; border: 1px solid var(--light); }
+.properties-grid.tarjeta-clasica .property-card { border-radius: 0; }
+.properties-grid.tarjeta-clasica .property-card img { border-radius: 0; }

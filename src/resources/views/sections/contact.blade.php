@@ -10,18 +10,25 @@
                 <h3>Conectemonos</h3>
                 <p>Nuestro equipo está listo para ayudarte con todas tus necesidades inmobiliarias. Contáctanos a través de cualquiera de los siguientes canales.</p>
                 <div class="contact-details">
-                    <!--div class="contact-item">
+                    <div class="contact-item">
                             <i class="fas fa-map-marker-alt"></i>
                             <div>
                                 <h4>Nuestra oficina</h4>
-                                <p>Av. Colón 123, Centro, Mérida, Yucatán</p>
+                                <p>{{ config('inmobiliaria.direccion') }}</p>
                             </div>
-                        </div-->
+                        </div>
+                    <div class="contact-item">
+                            <i class="fas fa-clock"></i>
+                            <div>
+                                <h4>Horario</h4>
+                                <p>{{ config('inmobiliaria.horario') }}</p>
+                            </div>
+                        </div>
                     <div class="contact-item">
                         <i class="fas fa-phone-alt"></i>
                         <div>
                             <h4>Teléfono</h4>
-                            <p>{{ config('inmobiliaria.telefono') }}</p>
+                            <p><a href="tel:{{ str_replace(' ', '', config('inmobiliaria.telefono')) }}">{{ config('inmobiliaria.telefono') }}</a></p>
                         </div>
                     </div>
                     <div class="contact-item">
@@ -35,7 +42,7 @@
                         <i class="fas fa-whatsapp"></i>
                         <div>
                             <h4>WhatsApp</h4>
-                            <p>{{ config('inmobiliaria.telefono') }}</p>
+                            <p><a href="https://wa.me/{{ config('inmobiliaria.whatsapp') }}?text={{ urlencode(config('inmobiliaria.whatsapp_mensaje_generico')) }}" target="_blank">{{ config('inmobiliaria.telefono') }}</a></p>
                         </div>
                     </div>
 

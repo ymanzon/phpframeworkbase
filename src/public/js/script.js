@@ -120,15 +120,37 @@ window.addEventListener("click", (e) => {
 });
 
 // Display properties
+// Lee los valores del config desde window.INMOBILIARIA (lo pone el layout
+// landing con config/inmobiliaria.php): estilo de tarjeta, propiedades por
+// página, orden y mostrar/ocultar precio. Sin eso, usa los valores de antes.
 function displayProperties(filter = "todo") {
     propertiesGrid.innerHTML = "";
+    const cfg = window.INMOBILIARIA || {};
 
-    const filteredProperties =
+    let filteredProperties =
         filter === "todo"
-            ? properties
+            ? properties.slice()
             : properties.filter((property) => property.location === filter);
 
+    if (cfg.orden === "precio_menor") {
+        filteredProperties.sort((a, b) => a.price - b.price);
+    } else if (cfg.orden === "precio_mayor") {
+        filteredProperties.sort((a, b) => b.price - a.price);
+    }
+    if (cfg.porPagina) {
+        filteredProperties = filteredProperties.slice(0, cfg.porPagina);
+    }
+    if (cfg.estiloTarjeta) {
+        propertiesGrid.classList.add("tarjeta-" + cfg.estiloTarjeta);
+    }
+
     filteredProperties.forEach((property) => {
+        const priceHtml =
+            cfg.mostrarPrecio === false
+                ? ""
+                : `<div class="property-price">$${formatNumber(
+                      property.price
+                  )} <span>/ ${property.type}</span></div>`;
         
         const propertyCard = document.createElement("div");
         propertyCard.className = "property-card";
@@ -138,9 +160,7 @@ function displayProperties(filter = "todo") {
 <img src="storage/${property.image}" alt="${property.title}">${property.featured? '<span class="property-badge">Destacado</span>': ""}
                     </a></div>
                     <div class="property-info">
-                        <div class="property-price">$${formatNumber(
-                            property.price
-                        )} <span>/ ${property.type}</span></div>
+                        ${priceHtml}
                         <h3 class="property-title">${property.title}</h3>
                         <div class="property-location">
                             <i class="fas fa-map-marker-alt"></i> ${
@@ -156,7 +176,7 @@ function displayProperties(filter = "todo") {
                         <div class="property-features" style="font-size:13px">
                             <span><i class="fas fa-maximize"></i> ${formatNumber(property.area)} m²</span>
                         </div>
-                        <a href="https://wa.me/52999123456?text=Estoy%20interesado%20en%20${encodeURIComponent(
+                        <a href="https://wa.me/${(window.INMOBILIARIA || {}).whatsapp || ''}?text=Estoy%20interesado%20en%20${encodeURIComponent(
                             property.title
                         )}%20por%20$${formatNumber(
             property.price

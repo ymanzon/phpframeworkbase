@@ -127,12 +127,14 @@ seguir sirviendo el config en caché y parecer que el cambio no funcionó.
    WhatsApp, correo, ciudad y color primario. Recarga inicio, catálogo,
    ficha, footer y login: todo debe cambiar sin tocar ningún Blade.
    Restaura los valores de Hábitat Mérida al terminar.
-2. Apaga testimonios (`secciones.testimonios => false`): **pendiente en
-   esta versión** — el layout incluye las secciones fijas y aún no lee
-   los interruptores de `secciones` ni `orden_secciones`. No lo pruebes
-   todavía; es trabajo pendiente de Fase 1, no una falla de tu instalación.
-3. Cambia `orden_secciones`: igual que el punto 2, pendiente de conectar
-   en el layout.
+2. Apaga una sección (`secciones.hero`, `servicios`, `contacto`,
+   `destacadas` o `buscador` en `false`): esa sección desaparece sin
+   romper la página. Restaura a `true`. Ojo: `testimonios`,
+   `calculadora` y `formulario` aún no tienen sección en el código, así
+   que su interruptor no hace nada todavía; es trabajo pendiente, no
+   falla de tu instalación.
+3. Cambia `orden_secciones`: pendiente de conectar en el layout (las
+   secciones van en orden fijo por ahora).
 4. En celular, abre una ficha y toca su botón de WhatsApp: debe abrir
    `wa.me/529991234567` con un mensaje sobre esa propiedad (el texto
    exacto lo arma la ficha desde el nombre y el precio, no desde el
