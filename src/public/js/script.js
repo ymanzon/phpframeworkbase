@@ -17,6 +17,9 @@ $.ajax({
             //price: formatDecimal(item.precio),
             price: item.precio,
             type: item.tipo,
+            latitud: item.latitud,
+            longitud: item.longitud,
+            direccion: item.direccion,
             beds: item.numero_cuartos,
             baths: item.numero_banos,
             //area: formatDecimal(item.tamano_terreno),
@@ -142,6 +145,12 @@ function displayProperties(filter = "todo") {
     }
     if (cfg.estiloTarjeta) {
         propertiesGrid.classList.add("tarjeta-" + cfg.estiloTarjeta);
+    }
+
+    // Avisa al mapa del catálogo (public/js/mapa-catalogo.js) qué
+    // propiedades quedaron tras el filtro y qué filtro se aplicó.
+    if (typeof window.actualizarMapaCatalogo === "function") {
+        window.actualizarMapaCatalogo(filteredProperties, filter);
     }
 
     filteredProperties.forEach((property) => {

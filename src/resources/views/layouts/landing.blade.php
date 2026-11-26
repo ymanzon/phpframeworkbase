@@ -29,6 +29,7 @@
     <title>@yield('title', config('inmobiliaria.nombre'))</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     
 
     <link rel="stylesheet" href="css/styles.css">
@@ -133,9 +134,12 @@
         'orden' => config('inmobiliaria.orden_propiedades'),
         'mostrarPrecio' => config('inmobiliaria.mostrar_precio'),
         'moneda' => config('inmobiliaria.moneda'),
+        'ciudades' => config('inmobiliaria.ciudades'),
     ]);
     </script>
     <script src="js/script.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="js/mapa-catalogo.js"></script>
     
     @stack('scripts')
 
