@@ -102,6 +102,28 @@
 </div>
     </div>
 
+    @if($inmueble->latitud && $inmueble->longitud)
+    <!-- Ubicación -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-white border-0">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-map-marker-alt me-2"></i>
+                        Ubicación
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @if($inmueble->direccion)
+                    <p class="mb-2">{{ $inmueble->direccion }}</p>
+                    @endif
+                    <div id="mapaShow" data-latitud="{{ $inmueble->latitud }}" data-longitud="{{ $inmueble->longitud }}" style="height: 320px; border-radius: 8px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
     <!-- Información del Inmueble -->
     <div class="col-lg-4">
         <!-- Precio -->
@@ -348,6 +370,7 @@
 @endsection
 
 @section('styles')
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
     .thumbnail-photo {
         transition: all 0.3s ease;
@@ -434,6 +457,22 @@
         
         // Tooltips para los iconos
         $('[data-bs-toggle="tooltip"]').tooltip();
+    });
+</script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    // Mapa de ubicación en la ficha (admin)
+    document.addEventListener('DOMContentLoaded', function () {
+        var div = document.getElementById('mapaShow');
+        if (!div || typeof L === 'undefined') return;
+        var lat = parseFloat(div.dataset.latitud), lng = parseFloat(div.dataset.longitud);
+        if (isNaN(lat) || isNaN(lng)) return;
+        var map = L.map('mapaShow').setView([lat, lng], 15);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        }).addTo(map);
+        L.marker([lat, lng]).addTo(map);
     });
 </script>
 @endsection

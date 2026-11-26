@@ -33,7 +33,12 @@
         </section>
 @endsection
 
+@section('styles')
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+@endsection
+
 @section('scripts')
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
 
          // Get property ID from URL
@@ -126,6 +131,16 @@
                                 </p>
                             </div>
                         ` : ''}
+
+                        ${property.latitud && property.longitud ? `
+                            <div class="info-section">
+                                <h3><i class="fas fa-map-marker-alt"></i> Ubicación</h3>
+                                <p style="color: var(--text-light); line-height: 1.8;">
+                                    ${ property.direccion ? property.direccion : property.ciudad }
+                                </p>
+                                <div id="mapaDetalle" style="height: 320px; border-radius: 10px;"></div>
+                            </div>
+                        ` : ''}
                     </div>
 
                     <div class="property-info">
@@ -188,6 +203,23 @@
                     </div>
                 </div>
             `;
+
+            // Mapa de ubicación (el div #mapaDetalle ya existe, se pintó arriba)
+            initDetailMap(property);
+        }
+
+        // Mapa de ubicación en la ficha (Leaflet, solo si hay coordenadas)
+        function initDetailMap(property) {
+            var div = document.getElementById('mapaDetalle');
+            if (!div || typeof L === 'undefined') return;
+            var lat = parseFloat(property.latitud), lng = parseFloat(property.longitud);
+            if (isNaN(lat) || isNaN(lng)) return;
+            var map = L.map('mapaDetalle').setView([lat, lng], 15);
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(map);
+            L.marker([lat, lng]).addTo(map).bindPopup(property.nombre).openPopup();
         }
 
         // Change main image function

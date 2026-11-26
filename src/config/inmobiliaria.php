@@ -89,6 +89,14 @@ return [
     'orden_propiedades' => 'recientes', // recientes | precio_menor | precio_mayor
     'mostrar_precio' => true,
 
+    // --- Mapa de ubicación (Leaflet + OpenStreetMap, sin llave de API) ---
+    // Centro inicial del selector de mapa al crear un inmueble.
+    'mapa' => [
+        'latitud' => 20.967,
+        'longitud' => -89.623,
+        'zoom' => 12,
+    ],
+
     // --- Contacto (¡sustituir por los datos reales del cliente!) ---
     'telefono' => env('INMOBILIARIA_TELEFONO', '+52 999 123 4567'), // de prueba, NO publicar así
     'whatsapp' => env('INMOBILIARIA_WHATSAPP', '529991234567'), // solo dígitos: 52 + lada 999 de Mérida

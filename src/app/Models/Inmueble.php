@@ -19,6 +19,9 @@ class Inmueble extends Model
         'tamano_construccion',
         'tamano_terreno',
         'ciudad',
+        'latitud',
+        'longitud',
+        'direccion',
         'descripcion',
         'disponibilidad',
         'tipo'
@@ -30,7 +33,9 @@ class Inmueble extends Model
         'numero_banos' => 'decimal:2',
         'tamano_construccion' => 'decimal:2',
         'tamano_terreno' => 'decimal:2',
-        'disponibilidad' => 'boolean'
+        'disponibilidad' => 'boolean',
+        'latitud' => 'decimal:8',
+        'longitud' => 'decimal:8'
     ];
 
     // Accessor para mostrar el precio formateado
