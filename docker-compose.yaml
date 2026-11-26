@@ -1,0 +1,92 @@
+version: '3.8'
+
+services:
+  # Servicio PHP con Apache
+  php-apache:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: laravel-app
+    volumes:
+      - ./src:/var/www/html
+    ports:
+      - "8080:80"
+    environment:
+      XDEBUG_MODE: debug
+      XDEBUG_CLIENT_HOST: host.docker.internal
+      XDEBUG_CLIENT_PORT: 9003
+    depends_on:
+      - mariadb
+    networks:
+      - app-network
+  
+  # Servicio Nginx (como alternativa a Apache)
+  nginx:
+    image: nginx:latest
+    container_name: nginx-server
+    ports:
+      - "80:80"
+    volumes:
+      - ./src:/var/www/html
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php-fpm
+    networks:
+      - app-network
+
+  # Servicio PHP-FPM (para usar con Nginx)
+  php-fpm:
+    build:
+      context: .
+      dockerfile: Dockerfile.fpm
+    container_name: php-fpm
+    volumes:
+      - ./src:/var/www/html
+    ports:
+      - "9000:9000"
+    environment:
+      XDEBUG_MODE: debug
+      XDEBUG_CLIENT_HOST: host.docker.internal
+      XDEBUG_CLIENT_PORT: 9003
+    depends_on:
+      - mariadb
+    networks:
+      - app-network
+ 
+  # Servicio MariaDB
+  mariadb:
+    image: mariadb:10.6
+    container_name: mariadb-server
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: laravel
+      MYSQL_USER: laravel
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: secret_root
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    networks:
+      - app-network
+
+  # Servicio phpMyAdmin (opcional)
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    ports:
+      - "8081:80"
+    environment:
+      PMA_HOST: mariadb
+      MYSQL_ROOT_PASSWORD: secret_root
+    depends_on:
+      - mariadb
+    networks:
+      - app-network
+
+volumes:
+  mariadb-data:
+
+networks:
+  app-network:
+    driver: bridge
