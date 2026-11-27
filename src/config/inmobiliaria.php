@@ -89,6 +89,25 @@ return [
     'orden_propiedades' => 'recientes', // recientes | precio_menor | precio_mayor
     'mostrar_precio' => true,
 
+    // --- Mapa de ubicación (Leaflet + OpenStreetMap, sin llave de API) ---
+    // Centro inicial del selector de mapa al crear un inmueble.
+    'mapa' => [
+        'latitud' => 20.967,
+        'longitud' => -89.623,
+        'zoom' => 12,
+    ],
+
+    // --- Centros de ciudad para el mapa del catálogo ---
+    // Al filtrar por ciudad, el mapa de la página principal se centra aquí
+    // y muestra los inmuebles de esa ciudad. Las claves deben coincidir
+    // con los valores de la columna ciudad (Merida, Monterrey, Campeche, Progreso).
+    'ciudades' => [
+        'Merida' => ['latitud' => 20.967, 'longitud' => -89.623, 'zoom' => 12],
+        'Monterrey' => ['latitud' => 25.6866, 'longitud' => -100.3161, 'zoom' => 12],
+        'Campeche' => ['latitud' => 19.8301, 'longitud' => -90.5349, 'zoom' => 12],
+        'Progreso' => ['latitud' => 21.2833, 'longitud' => -89.6636, 'zoom' => 13],
+    ],
+
     // --- Contacto (¡sustituir por los datos reales del cliente!) ---
     'telefono' => env('INMOBILIARIA_TELEFONO', '+52 999 123 4567'), // de prueba, NO publicar así
     'whatsapp' => env('INMOBILIARIA_WHATSAPP', '529991234567'), // solo dígitos: 52 + lada 999 de Mérida

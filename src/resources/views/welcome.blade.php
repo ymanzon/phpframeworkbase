@@ -23,6 +23,7 @@
                 
             </div>
             @endif
+            <div id="mapaCatalogo" style="height: 420px; border-radius: 10px; margin-bottom: 30px;"></div>
             <div class="properties-grid" id="propertiesGrid">
 
                 <div id="preloader" class="preloader">

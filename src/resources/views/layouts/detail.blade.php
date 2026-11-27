@@ -34,6 +34,7 @@
     <link rel="stylesheet" href="../../css/styles.css">
     <link rel="stylesheet" href="../../css/preloader.css">    
     <link rel="stylesheet" href="../../css/details.css">
+    @yield('styles')
     <!-- Colores, radio y fuentes de la inmobiliaria desde config/inmobiliaria.php -->
     <style>:root{--primary: {{ config('inmobiliaria.colores.primario') }}; --secondary: {{ config('inmobiliaria.colores.acento') }}; --accent: {{ config('inmobiliaria.colores.acento') }}; --color-fondo: {{ config('inmobiliaria.colores.fondo') }}; --color-texto: {{ config('inmobiliaria.colores.texto') }}; --radio-bordes: {{ config('inmobiliaria.radio_bordes') }};}
     body{font-family: '{{ config('inmobiliaria.fuente_texto') }}', sans-serif; background: var(--color-fondo); color: var(--color-texto);}

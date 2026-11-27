@@ -173,7 +173,14 @@
                                     @enderror
                                 </div>
                             </div>
-                        </div>
+                        
+                            <!-- Ubicación -->
+                            <h6 class="text-muted mb-3 mt-4">
+                                <i class="fas fa-map-marker-alt me-2"></i>
+                                Ubicación
+                            </h6>
+                            @include('inmuebles.partials.mapa-ubicacion', ['latitud' => old('latitud'), 'longitud' => old('longitud'), 'direccion' => old('direccion')])
+</div>
 
                         <!-- Additional Information -->
                         <div class="col-lg-4">
@@ -273,7 +280,10 @@
 @endsection
 
 @section('styles')
+<!-- Leaflet para el selector de ubicación -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
+    #mapaUbicacion { z-index: 1; }
     .form-label {
         font-weight: 600;
         color: #495057;
@@ -474,4 +484,8 @@
         });
     });
 </script>
+
+<!-- Leaflet + selector de ubicación -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="{{ asset('js/mapa-ubicacion.js') }}"></script>
 @endsection
