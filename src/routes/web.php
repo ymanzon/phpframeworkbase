@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InmuebleController;
+use App\Http\Controllers\LeadController;
 
 
 /*
@@ -12,6 +13,13 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');*/
 Route::get('/', [HomeController::class, 'welcome'])->name('home');
+
+// Formulario público de contacto (guarda el lead y avisa por correo/Telegram)
+Route::post('/contacto', [LeadController::class, 'store'])->name('contacto.enviar');
+
+// Páginas legales (textos en config/inmobiliaria.php, clave 'textos')
+Route::view('/aviso-de-privacidad', 'paginas.aviso-privacidad')->name('aviso-privacidad');
+Route::view('/terminos', 'paginas.terminos')->name('terminos');
 
 
 // Rutas de autenticación
@@ -29,6 +37,14 @@ Route::middleware('auth')->group(function () {
     
     // Ruta para eliminar foto específica
     Route::delete('/inmuebles/{inmueble}/foto/{index}', [InmuebleController::class, 'deleteFoto'])->name('inmuebles.delete-foto');
+
+    // Leads del formulario de contacto (bandeja en el panel).
+    // Requiere el middleware 'permiso:' del PR #2 (roles-permisos-usuarios):
+    // fusionar ese PR ANTES que esta rama. Cuando el PR #2 esté fusionado,
+    // crear el permiso 'leads.ver' en RolesPermisosSeeder y cambiar
+    // 'permiso:dashboard.ver' por 'permiso:leads.ver' en estas dos rutas.
+    Route::get('/leads', [LeadController::class, 'index'])->middleware('permiso:dashboard.ver')->name('leads.index');
+    Route::patch('/leads/{lead}/leido', [LeadController::class, 'marcarLeido'])->middleware('permiso:dashboard.ver')->name('leads.marcar-leido');
 });
 
 //envio del correo electrónico para restablecer la contraseña
