@@ -12,10 +12,12 @@
         </h4>
     </div>
     <div class="col-md-6 text-end">
+        @can('inmuebles.crear')
         <a href="{{ route('inmuebles.create') }}" class="btn btn-custom">
             <i class="fas fa-plus me-2"></i>
             Agregar Inmueble
         </a>
+        @endcan
     </div>
 </div>
 
@@ -134,15 +136,19 @@
                                    class="btn btn-outline-info btn-sm">
                                     <i class="fas fa-eye"></i>
                                 </a>
+                                @can('inmuebles.editar')
                                 <a href="{{ route('inmuebles.edit', $inmueble) }}" 
                                    class="btn btn-outline-warning btn-sm">
                                     <i class="fas fa-edit"></i>
                                 </a>
+                                @endcan
+                                @can('inmuebles.eliminar')
                                 <button type="button" 
                                         class="btn btn-outline-danger btn-sm"
                                         onclick="confirmDelete({{ $inmueble->id }}, '{{ $inmueble->nombre }}')">
                                     <i class="fas fa-trash"></i>
                                 </button>
+                                @endcan
                             </div>
                         </div>
                     </div>
@@ -161,10 +167,12 @@
             <i class="fas fa-home fa-3x text-muted mb-3"></i>
             <h5 class="text-muted">No hay inmuebles registrados</h5>
             <p class="text-muted">Comienza agregando tu primer inmueble</p>
+            @can('inmuebles.crear')
             <a href="{{ route('inmuebles.create') }}" class="btn btn-custom">
                 <i class="fas fa-plus me-2"></i>
                 Agregar Inmueble
             </a>
+            @endcan
         </div>
     </div>
 @endif
