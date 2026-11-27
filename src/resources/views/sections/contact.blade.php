@@ -49,6 +49,40 @@
                 </div>
 
             </div>
+
+            <div class="contact-form">
+                <h3>Escríbenos</h3>
+                <p>Déjanos tus datos y un asesor te contacta.</p>
+                @if(session('success'))
+                <div class="alert-success">{{ session('success') }}</div>
+                @endif
+                <form method="POST" action="{{ route('contacto.enviar') }}">
+                    @csrf
+                    <input type="hidden" name="origen" value="contacto">
+                    <div class="form-group">
+                        <label for="lead-nombre">Nombre *</label>
+                        <input type="text" id="lead-nombre" name="nombre" value="{{ old('nombre') }}" required maxlength="100">
+                        @error('nombre')<small class="form-error">{{ $message }}</small>@enderror
+                    </div>
+                    <div class="form-group">
+                        <label for="lead-correo">Correo *</label>
+                        <input type="email" id="lead-correo" name="correo" value="{{ old('correo') }}" required maxlength="150">
+                        @error('correo')<small class="form-error">{{ $message }}</small>@enderror
+                    </div>
+                    <div class="form-group">
+                        <label for="lead-telefono">Teléfono</label>
+                        <input type="tel" id="lead-telefono" name="telefono" value="{{ old('telefono') }}" maxlength="30">
+                        @error('telefono')<small class="form-error">{{ $message }}</small>@enderror
+                    </div>
+                    <div class="form-group">
+                        <label for="lead-mensaje">Mensaje *</label>
+                        <textarea id="lead-mensaje" name="mensaje" required maxlength="1000">{{ old('mensaje') }}</textarea>
+                        @error('mensaje')<small class="form-error">{{ $message }}</small>@enderror
+                    </div>
+                    <button type="submit">Enviar mensaje</button>
+                </form>
+                <p class="form-note">Al enviar aceptas nuestro <a href="{{ route('aviso-privacidad') }}">aviso de privacidad</a>.</p>
+            </div>
         </div>
     </div>
 </section>

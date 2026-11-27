@@ -116,6 +116,13 @@
                         <i class="fas fa-building me-3"></i>
                         Inmuebles
                     </a>
+                    {{-- Se muestra cuando existe el Gate (PR #2 fusionado); antes, @can devuelve false y no se ve. --}}
+                    @can('dashboard.ver')
+                    <a class="nav-link {{ request()->routeIs('leads.*') ? 'active' : '' }}" href="{{ route('leads.index') }}">
+                        <i class="fas fa-inbox me-3"></i>
+                        Leads
+                    </a>
+                    @endcan
                     <div class="mt-auto p-3">
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf

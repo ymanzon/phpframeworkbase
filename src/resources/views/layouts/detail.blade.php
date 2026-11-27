@@ -85,7 +85,7 @@
                     @if(config('inmobiliaria.redes.tiktok'))<a href="https://tiktok.com/@{{ ltrim(config('inmobiliaria.redes.tiktok'), '@') }}" target="_blank" rel="noopener"><i class="fab fa-tiktok"></i></a>@endif
                 </div>
                 @if(config('inmobiliaria.google_maps_embed'))<iframe src="{{ config('inmobiliaria.google_maps_embed') }}" style="border:0;width:100%;height:220px" loading="lazy"></iframe>@endif
-                <p>@if(config('inmobiliaria.aviso_privacidad'))<a href="{{ config('inmobiliaria.aviso_privacidad') }}">Aviso de privacidad</a>@endif @if(config('inmobiliaria.terminos'))<a href="{{ config('inmobiliaria.terminos') }}">T&eacute;rminos</a>@endif</p>
+                <p><a href="{{ route('aviso-privacidad') }}">Aviso de privacidad</a> &middot; <a href="{{ route('terminos') }}">T&eacute;rminos</a></p>
             </div>
             <div class="footer-bottom">
                 <p>&copy; {{ date('Y') }} {{ config('inmobiliaria.nombre') }}. Todos los derechos reservados.</p>
@@ -100,5 +100,12 @@
 
     @yield('scripts')
     @stack('scripts')
+
+    {{-- Botón flotante de WhatsApp en toda la página --}}
+    @if(config('inmobiliaria.whatsapp'))
+    <a href="https://wa.me/{{ config('inmobiliaria.whatsapp') }}?text={{ urlencode(config('inmobiliaria.whatsapp_mensaje_generico')) }}" class="whatsapp-float" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+    @endif
 </body>
 </html>

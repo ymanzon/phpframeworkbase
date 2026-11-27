@@ -35,7 +35,7 @@ return [
 
     // --- Hero ---
     'hero' => [
-        'imagen' => '/img/hero-merida.jpg',
+        'imagen' => 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1200&q=80', // URL de Unsplash; la vista la usa directo cuando empieza por http(s)
         'titulo' => 'Casas y departamentos en venta y renta en Mérida',
         'subtitulo' => 'Te acompañamos de la primera visita a la firma: búsqueda, crédito y trámites en un solo lugar.',
         'texto_boton_principal' => 'Buscar propiedades', // texto del botón de búsqueda del hero ({texto_boton_principal})
@@ -94,6 +94,18 @@ return [
     'whatsapp' => env('INMOBILIARIA_WHATSAPP', '529991234567'), // solo dígitos: 52 + lada 999 de Mérida
     'correo' => env('INMOBILIARIA_CORREO', 'contacto@habitatmerida.mx'), // de prueba
     'correo_leads' => env('INMOBILIARIA_CORREO_LEADS', 'leads@habitatmerida.mx'),
+
+    // --- Leads del formulario de contacto ---
+    // Canales de aviso cuando llega un lead (LEAD_CANALES en .env, separados
+    // por coma): 'correo' y/o 'telegram'. WhatsApp queda para después:
+    // NotificadorLead ya tiene el método notificarPorWhatsapp() listo.
+    'leads' => [
+        'canales' => array_filter(array_map('trim', explode(',', env('LEAD_CANALES', 'correo')))),
+        'telegram' => [
+            'token' => env('TELEGRAM_BOT_TOKEN', ''),
+            'chat_id' => env('TELEGRAM_CHAT_ID', ''),
+        ],
+    ],
     'direccion' => 'Calle 60 #123 x 45, Centro, Mérida, Yucatán',
     'horario' => 'Lun–Sáb 9:00–19:00',
 
@@ -103,9 +115,27 @@ return [
         'instagram' => env('INMOBILIARIA_INSTAGRAM', '@habitat.merida'),
         'tiktok' => '', // vacío si el cliente no tiene
     ],
-    'aviso_privacidad' => '', // texto o URL, editable por cliente
-    'terminos' => '', // texto o URL, editable por cliente
     'google_maps_embed' => '', // URL del mapa, opcional por cliente
+
+    // --- Textos legales (se muestran en /aviso-de-privacidad y /terminos) ---
+    // Textos genéricos para una inmobiliaria: adáptalos con los datos del
+    // cliente antes de publicar (nombre de la empresa, correo de contacto).
+    'textos' => [
+        'aviso_privacidad' => [
+            'La inmobiliaria responsable del tratamiento de tus datos personales es la empresa que opera este sitio web. Este aviso explica qué datos recabamos, para qué los usamos y cómo puedes ejercer tus derechos.',
+            'Datos que recabamos: cuando llenas el formulario de contacto o el de una propiedad, nos compartes tu nombre, correo electrónico, teléfono y el mensaje que escribes. También registramos la propiedad sobre la que preguntas y la fecha de tu mensaje.',
+            'Finalidades: usamos tus datos únicamente para atender tu solicitud, contactarte sobre la propiedad que te interesa, enviarte información relacionada y dar seguimiento a tu mensaje. No vendemos ni compartimos tus datos con terceros con fines publicitarios.',
+            'Derechos ARCO: puedes acceder, rectificar, cancelar u oponerte al tratamiento de tus datos, así como revocar tu consentimiento, escribiendo al correo de contacto publicado en este sitio. Responderemos tu solicitud en los plazos que marca la Ley Federal de Protección de Datos Personales en Posesión de los Particulares.',
+            'Seguridad y cambios: protegemos tus datos con medidas razonables de seguridad. Si este aviso cambia, publicaremos la versión actualizada en esta misma página.',
+        ],
+        'terminos' => [
+            'Uso del sitio: la información de este sitio —propiedades, precios y disponibilidad— se publica con fines informativos y puede cambiar sin previo aviso. La disponibilidad y el precio final de una propiedad se confirman con un asesor.',
+            'Precios y fotos: los precios están en pesos mexicanos (MXN) salvo que se indique lo contrario. Las fotos de las propiedades de ejemplo son imágenes de referencia y pueden no corresponder a la propiedad exacta.',
+            'Créditos y calculadora: la calculadora hipotecaria da una estimación informativa. La mensualidad real depende del banco, la tasa vigente, el plazo, el enganche y tu perfil crediticio. La aprobación del crédito corresponde a la institución financiera.',
+            'Contacto y mensajes: al enviarnos un mensaje aceptas que te contactemos por los medios que nos compartiste para atender tu solicitud, conforme a nuestro aviso de privacidad.',
+            'Responsabilidad: la inmobiliaria no se hace responsable por decisiones tomadas únicamente con la información de este sitio. Para cualquier operación, se recomienda verificar la documentación legal de la propiedad con un asesor.',
+        ],
+    ],
 
     // --- Propiedades demo ---
     // Carga las 9 propiedades de Mérida en "propiedades-demo.json"

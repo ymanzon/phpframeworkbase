@@ -31,9 +31,55 @@
                 </div>
             </div>
         </section>
+
+        <!-- Formulario corto de la ficha: guarda el lead con esta propiedad -->
+        @if(config('inmobiliaria.secciones.formulario'))
+        <section class="section" id="contacto-ficha">
+            <div class="container">
+                <div class="section-title">
+                    <h2>¿Te interesa esta propiedad?</h2>
+                    <p>Déjanos tus datos y un asesor te contacta.</p>
+                </div>
+                @if(session('success'))
+                <div class="alert-success" style="max-width: 560px; margin: 0 auto 16px;">{{ session('success') }}</div>
+                @endif
+                <form method="POST" action="{{ route('contacto.enviar') }}" class="contact-form" style="max-width: 560px; margin: 0 auto;">
+                    @csrf
+                    <input type="hidden" name="inmueble_id" value="{{ $id }}">
+                    <input type="hidden" name="origen" value="ficha">
+                    <div class="form-group">
+                        <label for="ficha-nombre">Nombre *</label>
+                        <input type="text" id="ficha-nombre" name="nombre" value="{{ old('nombre') }}" required maxlength="100">
+                        @error('nombre')<small class="form-error">{{ $message }}</small>@enderror
+                    </div>
+                    <div class="form-group">
+                        <label for="ficha-correo">Correo *</label>
+                        <input type="email" id="ficha-correo" name="correo" value="{{ old('correo') }}" required maxlength="150">
+                        @error('correo')<small class="form-error">{{ $message }}</small>@enderror
+                    </div>
+                    <div class="form-group">
+                        <label for="ficha-telefono">Teléfono</label>
+                        <input type="tel" id="ficha-telefono" name="telefono" value="{{ old('telefono') }}" maxlength="30">
+                        @error('telefono')<small class="form-error">{{ $message }}</small>@enderror
+                    </div>
+                    <div class="form-group">
+                        <label for="ficha-mensaje">Mensaje *</label>
+                        <textarea id="ficha-mensaje" name="mensaje" required maxlength="1000">{{ old('mensaje', 'Me interesa esta propiedad. ¿Me pueden dar más información?') }}</textarea>
+                        @error('mensaje')<small class="form-error">{{ $message }}</small>@enderror
+                    </div>
+                    <button type="submit">Enviar mensaje</button>
+                </form>
+                <p class="form-note" style="text-align: center;">Al enviar aceptas nuestro <a href="{{ route('aviso-privacidad') }}">aviso de privacidad</a>.</p>
+            </div>
+        </section>
+        @endif
+
+        {{-- Calculadora hipotecaria con el precio de esta propiedad --}}
+        @include('sections.calculadora')
 @endsection
 
 @section('scripts')
+    <script src="../../js/calculadora.js"></script>
     <script>
 
          // Get property ID from URL
@@ -43,6 +89,13 @@
             return {{ $id }}; // Assuming you pass the property ID from the backend
         }
        
+       // Foto: si ya es una URL (http, ej. Unsplash) se usa tal cual;
+        // si es un nombre de archivo, vive en storage/ (subido desde el panel).
+        function fotoUrl(foto) {
+            if (!foto) return '../fotos/default.jpg';
+            return foto.indexOf('http') === 0 ? foto : '/storage/' + foto;
+        }
+
        function displayPropertyDetail(property) 
        {
             const propertyId = getPropertyIdFromUrl();
@@ -70,13 +123,13 @@
             breadcrumbTitle.textContent = property.nombre;
 
             // Generate image gallery
-            const mainImage = property.fotos && property.fotos.length > 0 ? property.fotos[0] : '../fotos/default.jpg';
+            const mainImage = property.fotos && property.fotos.length > 0 ? fotoUrl(property.fotos[0]) : '../fotos/default.jpg';
             let thumbnailsHtml = '';
             
             if (property.fotos && property.fotos.length > 1) {
                 thumbnailsHtml = property.fotos.map((img, index) => `
                     <div class="thumbnail ${index === 0 ? 'active' : ''}" onclick="changeMainImage('${img}', ${index})">
-                        <img src="/storage/${img}" alt="Vista ${index + 1}">
+                        <img src="${fotoUrl(img)}" alt="Vista ${index + 1}">
                     </div>
                 `).join('');
             }
@@ -109,7 +162,7 @@
                     <div class="property-main">
                         <div class="image-gallery">
                             <div class="main-image">
-                                <img id="mainImage" src="/storage/${mainImage}" alt="${property.nombre}">
+                                <img id="mainImage" src="${mainImage}" alt="${property.nombre}">
                             </div>
                             ${property.fotos && property.fotos.length > 1 ? `
                                 <div class="thumbnail-gallery">
@@ -195,7 +248,7 @@
             const mainImage = document.getElementById('mainImage');
             const thumbnails = document.querySelectorAll('.thumbnail');
             
-            mainImage.src ='/storage/'+ src;
+            mainImage.src = fotoUrl(src);
             
             thumbnails.forEach(thumb => thumb.classList.remove('active'));
             thumbnails[index].classList.add('active');
@@ -227,6 +280,10 @@
                 success: function(request) {
                     //properties = request.data; // Assuming the response is an array of properties
                     displayPropertyDetail( request.data );
+                    // La calculadora de abajo se prellena con este precio.
+                    if (window.prellevarCalculadora) {
+                        window.prellevarCalculadora(request.data.precio);
+                    }
                 },
                 error: function() {
                     document.getElementById('propertyContent').innerHTML = `

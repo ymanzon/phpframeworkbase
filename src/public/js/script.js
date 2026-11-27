@@ -33,17 +33,66 @@ $.ajax({
 
         displayProperties();
 
-        // Property filtering
+        // Property filtering (ciudad)
         filterBtns.forEach((btn) => {
             btn.addEventListener("click", () => {
                 // Update active button
                 filterBtns.forEach((btn) => btn.classList.remove("active"));
                 btn.classList.add("active");
 
-                const filter = btn.dataset.filter;
-                displayProperties(filter);
+                filtrosCatalogo.ciudad = btn.dataset.filter;
+                displayProperties();
             });
         });
+
+        // Buscador: operación, precio máximo, recámaras mínimas y orden.
+        // Se combinan con el filtro de ciudad y vuelven a dibujar el catálogo.
+        const filtroOperacion = document.getElementById("filtroOperacion");
+        if (filtroOperacion) {
+            filtroOperacion.addEventListener("change", (e) => {
+                filtrosCatalogo.operacion = e.target.value;
+                displayProperties();
+            });
+        }
+        const filtroPrecioMax = document.getElementById("filtroPrecioMax");
+        if (filtroPrecioMax) {
+            filtroPrecioMax.addEventListener("input", (e) => {
+                filtrosCatalogo.precioMax = e.target.value;
+                displayProperties();
+            });
+        }
+        const filtroRecamaras = document.getElementById("filtroRecamaras");
+        if (filtroRecamaras) {
+            filtroRecamaras.addEventListener("change", (e) => {
+                filtrosCatalogo.recamarasMin = e.target.value;
+                displayProperties();
+            });
+        }
+        const filtroOrden = document.getElementById("filtroOrden");
+        if (filtroOrden) {
+            filtroOrden.addEventListener("change", (e) => {
+                filtrosCatalogo.orden = e.target.value;
+                displayProperties();
+            });
+        }
+        const limpiarFiltros = document.getElementById("limpiarFiltros");
+        if (limpiarFiltros) {
+            limpiarFiltros.addEventListener("click", () => {
+                filtrosCatalogo.ciudad = "todo";
+                filtrosCatalogo.operacion = "todas";
+                filtrosCatalogo.precioMax = "";
+                filtrosCatalogo.recamarasMin = "";
+                filtrosCatalogo.orden = (window.INMOBILIARIA || {}).orden || "recientes";
+                if (filtroOperacion) filtroOperacion.value = "todas";
+                if (filtroPrecioMax) filtroPrecioMax.value = "";
+                if (filtroRecamaras) filtroRecamaras.value = "";
+                if (filtroOrden) filtroOrden.value = filtrosCatalogo.orden;
+                filterBtns.forEach((btn) =>
+                    btn.classList.toggle("active", btn.dataset.filter === "todo")
+                );
+                displayProperties();
+            });
+        }
     },
     error: function (error) {
         console.log(error);
@@ -119,23 +168,67 @@ window.addEventListener("click", (e) => {
     }
 });
 
+// Filtros del buscador (welcome.blade.php): ciudad, operación (tipo Venta/
+// Renta), precio máximo, recámaras mínimas y orden. El orden inicial sale
+// del config (orden_propiedades) y el select lo puede cambiar.
+const filtrosCatalogo = {
+    ciudad: "todo",
+    operacion: "todas",
+    precioMax: "",
+    recamarasMin: "",
+    orden: (window.INMOBILIARIA || {}).orden || "recientes",
+};
+
+// Foto de una propiedad: si ya es una URL (http, ej. Unsplash) se usa tal
+// cual; si es un nombre de archivo, vive en storage/ (subido desde el panel).
+function fotoUrl(foto) {
+    if (!foto) return "https://via.placeholder.com/300";
+    return foto.indexOf("http") === 0 ? foto : "storage/" + foto;
+}
+
 // Display properties
 // Lee los valores del config desde window.INMOBILIARIA (lo pone el layout
 // landing con config/inmobiliaria.php): estilo de tarjeta, propiedades por
 // página, orden y mostrar/ocultar precio. Sin eso, usa los valores de antes.
-function displayProperties(filter = "todo") {
+function displayProperties() {
     propertiesGrid.innerHTML = "";
     const cfg = window.INMOBILIARIA || {};
 
-    let filteredProperties =
-        filter === "todo"
-            ? properties.slice()
-            : properties.filter((property) => property.location === filter);
+    let filteredProperties = properties.filter((property) => {
+        if (
+            filtrosCatalogo.ciudad !== "todo" &&
+            property.location !== filtrosCatalogo.ciudad
+        )
+            return false;
+        // Operación: el campo tipo de la tabla es Venta o Renta.
+        if (
+            filtrosCatalogo.operacion !== "todas" &&
+            property.type !== filtrosCatalogo.operacion
+        )
+            return false;
+        if (
+            filtrosCatalogo.precioMax !== "" &&
+            Number(property.price) > Number(filtrosCatalogo.precioMax)
+        )
+            return false;
+        if (
+            filtrosCatalogo.recamarasMin !== "" &&
+            Number(property.beds) < Number(filtrosCatalogo.recamarasMin)
+        )
+            return false;
+        return true;
+    });
 
-    if (cfg.orden === "precio_menor") {
+    if (filtrosCatalogo.orden === "precio_menor") {
         filteredProperties.sort((a, b) => a.price - b.price);
-    } else if (cfg.orden === "precio_mayor") {
+    } else if (filtrosCatalogo.orden === "precio_mayor") {
         filteredProperties.sort((a, b) => b.price - a.price);
+    }
+
+    if (filteredProperties.length === 0) {
+        propertiesGrid.innerHTML =
+            '<p class="text-center" style="grid-column: 1 / -1; padding: 40px 0;">No hay propiedades que coincidan con los filtros. Prueba quitar alguno.</p>';
+        return;
     }
     if (cfg.porPagina) {
         filteredProperties = filteredProperties.slice(0, cfg.porPagina);
@@ -157,7 +250,7 @@ function displayProperties(filter = "todo") {
         propertyCard.innerHTML = `
                     <div class="property-img">
                     <a href="inmueble/detail/${property.id}" target="_black" >
-<img src="storage/${property.image}" alt="${property.title}">${property.featured? '<span class="property-badge">Destacado</span>': ""}
+<img src="${fotoUrl(property.image)}" alt="${property.title}">${property.featured? '<span class="property-badge">Destacado</span>': ""}
                     </a></div>
                     <div class="property-info">
                         ${priceHtml}
