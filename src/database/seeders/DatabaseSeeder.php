@@ -27,6 +27,9 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('admin123'),
         ]);
 
+        // Roles y permisos + usuarios demo agente/cliente (ver RolesPermisosSeeder).
+        $this->call(RolesPermisosSeeder::class);
+
         $this->call(InmuebleDemoSeeder::class);
     }
 }

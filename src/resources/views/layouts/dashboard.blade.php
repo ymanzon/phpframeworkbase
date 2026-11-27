@@ -116,6 +116,18 @@
                         <i class="fas fa-building me-3"></i>
                         Inmuebles
                     </a>
+                    @can('usuarios.ver')
+                    <a class="nav-link {{ request()->routeIs('usuarios.*') ? 'active' : '' }}" href="{{ route('usuarios.index') }}">
+                        <i class="fas fa-users me-3"></i>
+                        Usuarios
+                    </a>
+                    @endcan
+                    @can('roles.ver')
+                    <a class="nav-link {{ request()->routeIs('roles.*') ? 'active' : '' }}" href="{{ route('roles.index') }}">
+                        <i class="fas fa-user-shield me-3"></i>
+                        Roles
+                    </a>
+                    @endcan
                     <div class="mt-auto p-3">
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf

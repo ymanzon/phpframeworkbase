@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 
@@ -23,6 +24,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Cada permiso (ej. 'inmuebles.crear') funciona como Gate: @can,
+        // Gate::allows y el middleware 'permiso:' lo resuelven con
+        // User::tienePermiso. El administrador pasa siempre.
+        Gate::before(function ($user, $ability) {
+            return $user->tienePermiso($ability) ? true : null;
+        });
+
         $this->routes(function () {
             Route::middleware('api')
                 ->prefix('api')

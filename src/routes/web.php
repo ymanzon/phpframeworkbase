@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InmuebleController;
+use App\Http\Controllers\RolController;
+use App\Http\Controllers\UsuarioController;
 
 
 /*
@@ -19,16 +21,53 @@ Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Rutas protegidas (requieren autenticación)
+// Rutas protegidas (requieren autenticación + permiso por acción).
+// El middleware 'permiso:' revisa User::tienePermiso; el administrador
+// pasa siempre. La API pública (/api/inmuebles) sigue abierta porque
+// alimenta el catálogo de la página principal.
 Route::middleware('auth')->group(function () {
     // Dashboard principal
-    Route::get('/dashboard', [HomeController::class, 'dashboard'])->name('dashboard');
-    
-    // CRUD de Inmuebles
-    Route::resource('inmuebles', InmuebleController::class);
-    
+    Route::get('/dashboard', [HomeController::class, 'dashboard'])
+        ->middleware('permiso:dashboard.ver')->name('dashboard');
+
+    // Inmuebles: ver, crear, editar y eliminar con permisos distintos.
+    Route::get('/inmuebles', [InmuebleController::class, 'index'])
+        ->middleware('permiso:inmuebles.ver')->name('inmuebles.index');
+    Route::get('/inmuebles/create', [InmuebleController::class, 'create'])
+        ->middleware('permiso:inmuebles.crear')->name('inmuebles.create');
+    Route::post('/inmuebles', [InmuebleController::class, 'store'])
+        ->middleware('permiso:inmuebles.crear')->name('inmuebles.store');
+    Route::get('/inmuebles/{inmueble}', [InmuebleController::class, 'show'])
+        ->middleware('permiso:inmuebles.ver')->name('inmuebles.show');
+    Route::get('/inmuebles/{inmueble}/edit', [InmuebleController::class, 'edit'])
+        ->middleware('permiso:inmuebles.editar')->name('inmuebles.edit');
+    Route::put('/inmuebles/{inmueble}', [InmuebleController::class, 'update'])
+        ->middleware('permiso:inmuebles.editar')->name('inmuebles.update');
+    Route::delete('/inmuebles/{inmueble}', [InmuebleController::class, 'destroy'])
+        ->middleware('permiso:inmuebles.eliminar')->name('inmuebles.destroy');
+
     // Ruta para eliminar foto específica
-    Route::delete('/inmuebles/{inmueble}/foto/{index}', [InmuebleController::class, 'deleteFoto'])->name('inmuebles.delete-foto');
+    Route::delete('/inmuebles/{inmueble}/foto/{index}', [InmuebleController::class, 'deleteFoto'])
+        ->middleware('permiso:inmuebles.editar')->name('inmuebles.delete-foto');
+
+    // Usuarios y roles: gestión con permisos por acción.
+    Route::resource('usuarios', UsuarioController::class)
+        ->only(['index'])->middleware('permiso:usuarios.ver');
+    Route::resource('usuarios', UsuarioController::class)
+        ->only(['create', 'store'])->middleware('permiso:usuarios.crear');
+    Route::resource('usuarios', UsuarioController::class)
+        ->only(['edit', 'update'])->middleware('permiso:usuarios.editar');
+    Route::resource('usuarios', UsuarioController::class)
+        ->only(['destroy'])->middleware('permiso:usuarios.eliminar');
+
+    Route::resource('roles', RolController::class)
+        ->only(['index'])->middleware('permiso:roles.ver');
+    Route::resource('roles', RolController::class)
+        ->only(['create', 'store'])->middleware('permiso:roles.crear');
+    Route::resource('roles', RolController::class)
+        ->only(['edit', 'update'])->middleware('permiso:roles.editar');
+    Route::resource('roles', RolController::class)
+        ->only(['destroy'])->middleware('permiso:roles.eliminar');
 });
 
 //envio del correo electrónico para restablecer la contraseña
